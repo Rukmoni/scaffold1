@@ -305,12 +305,18 @@ describe('useAuth store', () => {
       const storageError = new Error('Storage error');
       mockStorage.getItem.mockRejectedValue(storageError);
       
+      // Suppress expected console.error output
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
       const { result } = renderHook(() => useAuth());
       
       // Should not throw error
       await act(async () => {
         await result.current.rehydrateAuth();
       });
+      
+      // Restore console.error
+      consoleSpy.mockRestore();
       
       expect(result.current.isHydrating).toBe(false);
       expect(result.current.isLoggedIn).toBe(false);

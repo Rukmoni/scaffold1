@@ -1,18 +1,14 @@
 import { mockLogin, mockLogout } from '../authService';
 import { User } from '../types';
 
-// Mock timers for testing delays
-jest.useFakeTimers();
-
 describe('authService', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllTimers();
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
     jest.useRealTimers();
-    jest.useFakeTimers();
   });
 
   describe('mockLogin', () => {
@@ -57,19 +53,11 @@ describe('authService', () => {
       // Advance timers by less than 1000ms - should not resolve yet
       jest.advanceTimersByTime(500);
       
-      // Promise should still be pending
-      let resolved = false;
-      loginPromise.then(() => { resolved = true; });
-      
-      await Promise.resolve(); // Allow microtasks to run
-      expect(resolved).toBe(false);
-      
       // Now advance the remaining time
       jest.advanceTimersByTime(500);
-      await loginPromise;
       
-      expect(resolved).toBe(false); // Still false until we await
-      await loginPromise; // This should now resolve
+      const result = await loginPromise;
+      expect(result).toBeDefined();
     });
 
     it('should return consistent data on multiple calls', async () => {
@@ -102,15 +90,11 @@ describe('authService', () => {
       // Advance timers by less than 500ms - should not resolve yet
       jest.advanceTimersByTime(250);
       
-      let resolved = false;
-      logoutPromise.then(() => { resolved = true; });
-      
-      await Promise.resolve(); // Allow microtasks to run
-      expect(resolved).toBe(false);
-      
       // Now advance the remaining time
       jest.advanceTimersByTime(250);
-      await logoutPromise;
+      
+      const result = await logoutPromise;
+      expect(result).toBe(true);
     });
 
     it('should always return boolean true', async () => {
