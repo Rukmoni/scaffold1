@@ -14,7 +14,7 @@ const navItems = ['App', 'Play', 'Purchases', 'Check-in', 'Flight Status', 'FAQ'
 
 export function Header() {
   const { isMobileMenuOpen, setMobileMenuOpen, isProfileMenuOpen, setProfileMenuOpen } = useUIStore();
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, login, isLoading } = useAuth();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
 
@@ -22,6 +22,19 @@ export function Header() {
     console.log(`Navigate to ${item}`);
     if (isMobile) {
       setMobileMenuOpen(false);
+    }
+  };
+
+  const handleAuthAction = async (action: 'login' | 'signup') => {
+    if (action === 'login') {
+      try {
+        await login();
+        console.log('User logged in successfully');
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
+    } else {
+      console.log('Navigate to signup');
     }
   };
 
@@ -69,24 +82,52 @@ export function Header() {
 
           {/* Profile */}
           <View style={styles.profileContainer}>
-            <Pressable
-              style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}
-              onPress={() => setProfileMenuOpen(!isProfileMenuOpen)}
-              accessibilityRole="button"
-              accessibilityLabel="Open profile menu"
-            >
-              <View style={styles.avatar}>
-                <User size={isMobile ? 18 : 20} color={colors.white} />
+            {isLoggedIn ? (
+              <>
+                <Pressable
+                  style={({ pressed }) => [styles.profileButton, pressed && styles.pressed]}
+                  onPress={() => setProfileMenuOpen(!isProfileMenuOpen)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open profile menu"
+                >
+                  <View style={styles.avatar}>
+                    <User size={isMobile ? 18 : 20} color={colors.white} />
+                  </View>
+                  {!isMobile && (
+                    <>
+                      <Text style={styles.profileText}>{user?.name}</Text>
+                      <ChevronDown size={16} color={colors.grayMedium} />
+                    </>
+                  )}
+                </Pressable>
+                {/* Profile Menu for Desktop */}
+                {!isMobile && <ProfileMenu />}
+              </>
+            ) : (
+              <View style={styles.authButtons}>
+                <Pressable
+                  style={({ pressed }) => [styles.authButton, styles.loginButton, pressed && styles.pressed]}
+                  onPress={() => handleAuthAction('login')}
+                  disabled={isLoading}
+                  accessibilityRole="button"
+                  accessibilityLabel="Login"
+                >
+                  <Text style={[styles.authButtonText, styles.loginButtonText]}>
+                    {isLoading ? 'Logging in...' : 'Login'}
+                  </Text>
+                </Pressable>
+                {!isMobile && (
+                  <Pressable
+                    style={({ pressed }) => [styles.authButton, styles.signupButton, pressed && styles.pressed]}
+                    onPress={() => handleAuthAction('signup')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Sign up"
+                  >
+                    <Text style={[styles.authButtonText, styles.signupButtonText]}>Sign up</Text>
+                  </Pressable>
+                )}
               </View>
-              {!isMobile && (
-                <>
-                  <Text style={styles.profileText}>{user?.name || 'Guest'}</Text>
-                  <ChevronDown size={16} color={colors.grayMedium} />
-                </>
-              )}
-            </Pressable>
-            {/* Profile Menu for Desktop */}
-            {!isMobile && <ProfileMenu />}
+            )}
           </View>
 
           {/* Mobile Menu Button */}
@@ -146,6 +187,37 @@ export function Header() {
 
             {/* Mobile Locale Selector */}
             <View style={styles.mobileLocaleSection}>
+              {/* Auth buttons for mobile when not logged in */}
+              {!isLoggedIn && (
+                <View style={styles.mobileAuthSection}>
+                  <Pressable
+                    style={({ pressed }) => [styles.mobileAuthButton, styles.loginButton, pressed && styles.pressed]}
+                    onPress={() => {
+                      handleAuthAction('login');
+                      setMobileMenuOpen(false);
+                    }}
+                    disabled={isLoading}
+                    accessibilityRole="button"
+                    accessibilityLabel="Login"
+                  >
+                    <Text style={[styles.authButtonText, styles.loginButtonText]}>
+                      {isLoading ? 'Logging in...' : 'Login'}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={({ pressed }) => [styles.mobileAuthButton, styles.signupButton, pressed && styles.pressed]}
+                    onPress={() => {
+                      handleAuthAction('signup');
+                      setMobileMenuOpen(false);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Sign up"
+                  >
+                    <Text style={[styles.authButtonText, styles.signupButtonText]}>Sign up</Text>
+                  </Pressable>
+                </View>
+              )}
+              
               <Pressable
                 style={({ pressed }) => [styles.mobileLocaleButton, pressed && styles.pressed]}
                 onPress={() => console.log('Open locale selector')}
@@ -342,5 +414,48 @@ const styles = StyleSheet.create({
     color: colors.grayDark,
     fontWeight: typography.weightMedium,
     flex: 1,
+  },
+  
+  // Auth Button Styles
+  authButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  authButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  loginButton: {
+    backgroundColor: colors.primary,
+  },
+  signupButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  authButtonText: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
+  },
+  loginButtonText: {
+    color: colors.white,
+  },
+  signupButtonText: {
+    color: colors.primary,
+  },
+  mobileAuthSection: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
+  },
+  mobileAuthButton: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
   },
 });

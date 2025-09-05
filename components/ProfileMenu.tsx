@@ -26,7 +26,7 @@ const menuItems = [
 
 export function ProfileMenu() {
   const { isProfileMenuOpen, setProfileMenuOpen } = useUIStore();
-  const { logout, isLoading } = useAuth();
+  const { logout, isLoading, isLoggedIn } = useAuth();
 
   const handleMenuAction = async (action: string) => {
     if (action === 'logout') {
@@ -41,6 +41,11 @@ export function ProfileMenu() {
     }
     setProfileMenuOpen(false);
   };
+
+  // Don't render menu if not logged in
+  if (!isLoggedIn) {
+    return null;
+  }
 
   if (Platform.OS === 'web') {
     return isProfileMenuOpen ? (
