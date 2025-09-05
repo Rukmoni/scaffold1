@@ -12,6 +12,7 @@ import {
 } from 'lucide-react-native';
 import { colors, spacing, borderRadius, typography } from '@/constants/tokens';
 import { useUIStore } from '@/stores/uiStore';
+import { useAuth } from '@features/auth';
 
 const menuItems = [
   { icon: User, label: 'My account', action: 'account' },
@@ -25,9 +26,19 @@ const menuItems = [
 
 export function ProfileMenu() {
   const { isProfileMenuOpen, setProfileMenuOpen } = useUIStore();
+  const { logout, isLoading } = useAuth();
 
-  const handleMenuAction = (action: string) => {
-    console.log(`Profile menu action: ${action}`);
+  const handleMenuAction = async (action: string) => {
+    if (action === 'logout') {
+      try {
+        await logout();
+        console.log('User logged out successfully');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    } else {
+      console.log(`Profile menu action: ${action}`);
+    }
     setProfileMenuOpen(false);
   };
 

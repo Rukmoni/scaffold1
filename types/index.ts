@@ -21,8 +21,5 @@ export interface SearchPayload {
   airlineOnly: boolean;
 }
 
-export interface User {
-  name: string;
-  avatar: string;
-  email: string;
-}
+// User interface moved to features/auth/types.ts
+// Import from @features/auth instead

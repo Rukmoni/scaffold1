@@ -6,6 +6,7 @@ import { Menu, ChevronDown, Globe, User, X } from 'lucide-react-native';
 import { colors, spacing, typography, borderRadius } from '@/constants/tokens';
 import { useUIStore } from '@/stores/uiStore';
 import { ProfileMenu } from './ProfileMenu';
+import { useAuth } from '@features/auth';
 
 const { width } = Dimensions.get('window');
 
@@ -13,6 +14,7 @@ const navItems = ['App', 'Play', 'Purchases', 'Check-in', 'Flight Status', 'FAQ'
 
 export function Header() {
   const { isMobileMenuOpen, setMobileMenuOpen, isProfileMenuOpen, setProfileMenuOpen } = useUIStore();
+  const { user, isLoggedIn } = useAuth();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
 
@@ -78,7 +80,7 @@ export function Header() {
               </View>
               {!isMobile && (
                 <>
-                  <Text style={styles.profileText}>Rukmoni</Text>
+                  <Text style={styles.profileText}>{user?.name || 'Guest'}</Text>
                   <ChevronDown size={16} color={colors.grayMedium} />
                 </>
               )}
