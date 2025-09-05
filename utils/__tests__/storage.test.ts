@@ -117,8 +117,14 @@ describe('storage utility', () => {
         throw new Error('Storage error');
       });
       
+      // Suppress expected console.error output
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
       // Should not throw
       await expect(storage.setItem('test-key', 'test-value')).resolves.toBeUndefined();
+      
+      // Restore console.error
+      consoleSpy.mockRestore();
     });
   });
 });

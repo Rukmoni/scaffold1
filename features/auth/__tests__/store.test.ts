@@ -328,11 +328,17 @@ describe('useAuth store', () => {
         .mockResolvedValueOnce('mock-auth-token-123')
         .mockResolvedValueOnce('mock-ga-id-456');
       
+      // Suppress expected console.error output
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
       const { result } = renderHook(() => useAuth());
       
       await act(async () => {
         await result.current.rehydrateAuth();
       });
+      
+      // Restore console.error
+      consoleSpy.mockRestore();
       
       expect(result.current.isHydrating).toBe(false);
       expect(result.current.isLoggedIn).toBe(false);

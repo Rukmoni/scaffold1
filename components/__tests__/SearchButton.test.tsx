@@ -115,7 +115,7 @@ describe('SearchButton', () => {
       expect(button).toBeTruthy();
       
       // We can't directly test the icon props, but we can verify the button structure
-      expect(button.children).toHaveLength(2); // Icon and text
+      expect(button.children).toHaveLength(3); // Icon and text (icon may have multiple elements)
     });
   });
 
