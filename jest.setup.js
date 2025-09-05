@@ -1,3 +1,9 @@
 // Silence Animated warning & set up RN gesture handler if present
 import 'react-native-gesture-handler/jestSetup';
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+// 👇 Wrap in try/catch so it won’t break on RN 0.79+
+try {
+  jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+} catch (e) {
+  // No-op: RN 0.79 doesn’t ship this helper anymore
+}
