@@ -10,7 +10,7 @@ export const storage = {
         await AsyncStorage.setItem(key, value);
       }
     } catch (error) {
-      console.error(`Error setting storage item ${key}:`, error);
+      //console.error(`Error setting storage item ${key}:`, error);
     }
   },
 
@@ -22,8 +22,8 @@ export const storage = {
         return await AsyncStorage.getItem(key);
       }
     } catch (error) {
-      console.error(`Error getting storage item ${key}:`, error);
-      return null;
+      //console.error(`Error getting storage item ${key}:`, error);
+     // return null;
     }
   },
 
@@ -35,7 +35,7 @@ export const storage = {
         await AsyncStorage.removeItem(key);
       }
     } catch (error) {
-      console.error(`Error removing storage item ${key}:`, error);
+     // console.error(`Error removing storage item ${key}:`, error);
     }
   },
 
@@ -47,7 +47,7 @@ export const storage = {
         await AsyncStorage.multiRemove(keys);
       }
     } catch (error) {
-      console.error('Error removing multiple storage items:', error);
+      //console.error('Error removing multiple storage items:', error);
     }
   }
 };
